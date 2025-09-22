@@ -10,13 +10,18 @@ public class PlayerManager : MonoBehaviour
         Park
     }
 
-    public GearState currentState = GearState.Park;
+    [HideInInspector] public GearState currentState = GearState.Park;
 
     public static PlayerManager Instance;
 
     void Awake()
     {
         Instance = this;
+    }
+
+    private void Start()
+    {
+        currentState = GearState.Park;
     }
 
     void Update()
@@ -29,6 +34,8 @@ public class PlayerManager : MonoBehaviour
         {
             SwitchGear(false);
         }
+
+        StateCheck();
     }
 
     private void SwitchGear(bool forwardShift)
@@ -64,6 +71,28 @@ public class PlayerManager : MonoBehaviour
                 break;
         }
 
+        UIManager.Instance.UpdateGearText("Gear: " + currentState.ToString());
         Debug.Log(currentState);
     }
+
+    private void StateCheck()
+    {
+        switch (currentState)
+        {
+            case GearState.Drive:
+
+                break;
+
+            case GearState.Reverse:
+
+                break;
+            case GearState.Neutral:
+
+                break;
+
+            case GearState.Park:
+                break;
+        }
+    }
+
 }
