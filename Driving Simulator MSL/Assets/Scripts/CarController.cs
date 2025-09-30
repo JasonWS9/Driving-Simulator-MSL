@@ -1,6 +1,7 @@
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class CarController : MonoBehaviour
@@ -26,14 +27,15 @@ public class CarController : MonoBehaviour
     [SerializeField] private float turnSensitivity = 1.0f;
     [SerializeField] private float maxSteerAngle = 30.0f;
 
-    [SerializeField] private Vector3 _centerOfMass;
-
     [SerializeField] private List<Wheel> wheels;
 
     private float moveInput;
     private float steerInput;
 
+    private float finalMove;
+
     private Rigidbody carRB;
+
 
     private void Awake()
     {
@@ -42,7 +44,7 @@ public class CarController : MonoBehaviour
     private void Start()
     {
         carRB = GetComponent<Rigidbody>();
-        carRB.centerOfMass = _centerOfMass;
+        carRB.centerOfMass = new Vector3(0, -0.5f, 0);
     }
 
     private void Update()
@@ -57,17 +59,59 @@ public class CarController : MonoBehaviour
         Brake();
     }
 
+    /*
+    private void OnEnable()
+    {
+        PlayerManager.OnGearShift += ShiftGear;
+    }
+    private void OnDisable()
+    {
+        PlayerManager.OnGearShift -= ShiftGear;
+    }
+
+    public void ShiftGear()
+    {
+        Debug.Log("ggeerrrar");
+    }
+    */
     void GetInputs()
     {
-        moveInput = Input.GetAxis("Vertical");
+        moveInput = MathF.Max(0, Input.GetAxis("Vertical"));
         steerInput = Input.GetAxis("Horizontal");
     }
 
     private void Move()
-    {
+    {  
+        finalMove = PlayerManager.Instance.currentState switch
+        {
+            PlayerManager.GearState.Drive => MathF.Abs(moveInput),
+            PlayerManager.GearState.Reverse => -Mathf.Abs(moveInput),
+            PlayerManager.GearState.Neutral => 0,
+            PlayerManager.GearState.Park => 0,
+            _ => 0,
+        };
+
+       /*
+       switch (PlayerManager.Instance.currentState)
+        {
+            case PlayerManager.GearState.Drive:
+                finalMove = Mathf.Abs(moveInput);
+                break;
+            case PlayerManager.GearState.Reverse:
+                finalMove = -(Mathf.Abs(moveInput));
+                break;
+            case PlayerManager.GearState.Neutral:
+                finalMove = 0;
+                break;
+            case PlayerManager.GearState.Park:
+                finalMove = 0;
+                break;
+        }
+       */
+
         foreach (var wheel in wheels)
         {
-            wheel.wheelCollider.motorTorque = moveInput * 600 * maxAcceleration * Time.deltaTime;
+            wheel.wheelCollider.motorTorque = finalMove * 600 * maxAcceleration * Time.deltaTime;
         }
     }
 
@@ -85,7 +129,7 @@ public class CarController : MonoBehaviour
 
     private void Brake()
     {
-        if (Input.GetKey(KeyCode.Space))
+        if (Input.GetKey(KeyCode.Space) || Input.GetKey(KeyCode.S) || PlayerManager.Instance.currentState == PlayerManager.GearState.Park)
         {
             foreach (var wheel in wheels)
             {

@@ -1,4 +1,6 @@
 using UnityEngine;
+using System;
+using UnityEngine.Events;
 
 public class PlayerManager : MonoBehaviour
 {
@@ -14,6 +16,9 @@ public class PlayerManager : MonoBehaviour
 
     public static PlayerManager Instance;
 
+    //public static event Action OnGearShift;
+    //public UnityEvent OnGearShiftEvent;
+
     void Awake()
     {
         Instance = this;
@@ -26,20 +31,21 @@ public class PlayerManager : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.R))
+        if (Input.GetKeyDown(KeyCode.E))
         {
             SwitchGear(true);
         }
-        if (Input.GetKeyDown(KeyCode.E))
+        if (Input.GetKeyDown(KeyCode.Q))
         {
             SwitchGear(false);
         }
-
-        StateCheck();
     }
 
     private void SwitchGear(bool forwardShift)
     {
+        //OnGearShift?.Invoke();
+        //OnGearShiftEvent?.Invoke();
+
         switch (currentState)
         {
             case GearState.Drive:
@@ -75,24 +81,5 @@ public class PlayerManager : MonoBehaviour
         Debug.Log(currentState);
     }
 
-    private void StateCheck()
-    {
-        switch (currentState)
-        {
-            case GearState.Drive:
-
-                break;
-
-            case GearState.Reverse:
-
-                break;
-            case GearState.Neutral:
-
-                break;
-
-            case GearState.Park:
-                break;
-        }
-    }
 
 }
