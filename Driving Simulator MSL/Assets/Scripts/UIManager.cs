@@ -5,7 +5,8 @@ public class UIManager : MonoBehaviour
 {
     public static UIManager Instance;
 
-    [SerializeField] private TextMeshProUGUI gearText;
+     public TextMeshProUGUI gearText;
+     public TextMeshProUGUI engineText;
 
     private void Awake()
     {
@@ -17,8 +18,8 @@ public class UIManager : MonoBehaviour
     }
 
 
-    public void UpdateGearText(string newText)
+    public void UpdateText(TextMeshProUGUI text, string newText)
     {
-        gearText.text = newText;
+        text.text = newText;
     }
 }

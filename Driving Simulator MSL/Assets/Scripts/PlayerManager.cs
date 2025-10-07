@@ -16,6 +16,8 @@ public class PlayerManager : MonoBehaviour
 
     public static PlayerManager Instance;
 
+    [HideInInspector] public bool isEngineStarted = false;
+
     //public static event Action OnGearShift;
     //public UnityEvent OnGearShiftEvent;
 
@@ -27,6 +29,7 @@ public class PlayerManager : MonoBehaviour
     private void Start()
     {
         currentState = GearState.Park;
+        isEngineStarted = false;
     }
 
     void Update()
@@ -38,6 +41,23 @@ public class PlayerManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Q))
         {
             SwitchGear(false);
+        }
+
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            if (!isEngineStarted)
+            {
+                isEngineStarted = true;
+                UIManager.Instance.UpdateText(UIManager.Instance.engineText, "Engine: On");
+            } else {
+                isEngineStarted = false;
+                UIManager.Instance.UpdateText(UIManager.Instance.engineText, "Engine: Off");
+            }
+        }
+
+        if (Input.GetKeyDown(KeyCode.T))
+        {
+            GameManager.Instance.ReloadScene();
         }
     }
 
@@ -77,8 +97,7 @@ public class PlayerManager : MonoBehaviour
                 break;
         }
 
-        UIManager.Instance.UpdateGearText("Gear: " + currentState.ToString());
-        Debug.Log(currentState);
+        UIManager.Instance.UpdateText(UIManager.Instance.gearText, "Gear: " + currentState.ToString());
     }
 
 

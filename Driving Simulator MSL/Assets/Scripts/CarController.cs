@@ -81,38 +81,44 @@ public class CarController : MonoBehaviour
     }
 
     private void Move()
-    {  
-        finalMove = PlayerManager.Instance.currentState switch
+    {
+        if (PlayerManager.Instance.isEngineStarted)
         {
-            PlayerManager.GearState.Drive => MathF.Abs(moveInput),
-            PlayerManager.GearState.Reverse => -Mathf.Abs(moveInput),
-            PlayerManager.GearState.Neutral => 0,
-            PlayerManager.GearState.Park => 0,
-            _ => 0,
-        };
-
-       /*
-       switch (PlayerManager.Instance.currentState)
+            finalMove = PlayerManager.Instance.currentState switch
+            {
+                PlayerManager.GearState.Drive => MathF.Abs(moveInput),
+                PlayerManager.GearState.Reverse => -Mathf.Abs(moveInput),
+                PlayerManager.GearState.Neutral => 0,
+                PlayerManager.GearState.Park => 0,
+                _ => 0,
+            };
+        } else
         {
-            case PlayerManager.GearState.Drive:
-                finalMove = Mathf.Abs(moveInput);
-                break;
-            case PlayerManager.GearState.Reverse:
-                finalMove = -(Mathf.Abs(moveInput));
-                break;
-            case PlayerManager.GearState.Neutral:
-                finalMove = 0;
-                break;
-            case PlayerManager.GearState.Park:
-                finalMove = 0;
-                break;
+            finalMove = 0;
         }
-       */
 
-        foreach (var wheel in wheels)
-        {
-            wheel.wheelCollider.motorTorque = finalMove * 600 * maxAcceleration * Time.deltaTime;
-        }
+            /*
+            switch (PlayerManager.Instance.currentState)
+             {
+                 case PlayerManager.GearState.Drive:
+                     finalMove = Mathf.Abs(moveInput);
+                     break;
+                 case PlayerManager.GearState.Reverse:
+                     finalMove = -(Mathf.Abs(moveInput));
+                     break;
+                 case PlayerManager.GearState.Neutral:
+                     finalMove = 0;
+                     break;
+                 case PlayerManager.GearState.Park:
+                     finalMove = 0;
+                     break;
+             }
+            */
+
+            foreach (var wheel in wheels)
+            {
+                wheel.wheelCollider.motorTorque = finalMove * 600 * maxAcceleration * Time.deltaTime;
+            }
     }
 
     private void Steer()
@@ -129,7 +135,7 @@ public class CarController : MonoBehaviour
 
     private void Brake()
     {
-        if (Input.GetKey(KeyCode.Space) || Input.GetKey(KeyCode.S) || PlayerManager.Instance.currentState == PlayerManager.GearState.Park)
+        if (Input.GetKey(KeyCode.Space) || Input.GetKey(KeyCode.S) || PlayerManager.Instance.currentState == PlayerManager.GearState.Park || PlayerManager.Instance.isEngineStarted == false)
         {
             foreach (var wheel in wheels)
             {
